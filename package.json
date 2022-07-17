@@ -1,0 +1,7 @@
+{
+  "name": "gomoku-typescript",
+  "packageManager": "yarn@3.2.1",
+  "dependencies": {
+    "typescript": "^4.7.4"
+  }
+}
