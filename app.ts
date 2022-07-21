@@ -11,7 +11,7 @@ class Space {
     status: STATUS
     element: HTMLDivElement
 
-    constructor(x: number,y:number, status: "VACANT"){
+    constructor(x: number,y: number, status: "VACANT"){
         this.x = x
         this.y = y
         this.status = status
@@ -37,10 +37,14 @@ class Board {
     spaces: Space[][]
     element: HTMLDivElement
 
-    constructor(xlen: number, ylen: number){
-        this.spaces =
+    constructor(size: number){
+        this.spaces = [];
+        for(var i: number = 0; i < size; i++){
+            this.spaces[i] = []
+            for(var j: number=0; j < size; j++){
+                this.spaces[i][j] = new Space(i,j,"VACANT");
+            }
+        }
     }
-
-
 
 }
