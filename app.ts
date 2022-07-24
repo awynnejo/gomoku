@@ -1,50 +1,51 @@
-type STATUS = "VACANT" | "BLACK" | "WHITE"
+type TILE = "VACANT" | "BLACK" | "WHITE"
 type TURN = "BLACK" | "WHITE"
-
-
-var turn:TURN = "BLACK"
-
-
-class Space {
+type COORDINATES = {
     x: number
     y: number
-    status: STATUS
-    element: HTMLDivElement
+}
 
-    constructor(x: number,y: number, status: "VACANT"){
-        this.x = x
-        this.y = y
-        this.status = status
-        this.element = document.createElement('div')
-        this.element.classList.add('square')
-        this.element.classList.add(this.status.toLowerCase())
-        this.element.addEventListener('click', () => {
-            this.handleClick()
-        })
+class Game {
+    board: TILE[][]
+    turn: TURN
+    size: number
+
+    constructor(size: number){
+        this.board = new Array(size)
+            .fill("VACANT")
+            .map(() => new Array(size).fill("VACANT"))
+        this.turn = "BLACK"
+        this.size = size
     }
-
-    handleClick() {
-        if (this.status === "VACANT") return
-        this.element.classList.remove(this.status.toLowerCase())
-        this.status = turn
-        this.element.classList.add(this.status.toLowerCase())
+    checkWin(){
+        return null
+    }
+    placeTile(x: number, y: number){
+        this.board[x][y] = this.turn
     }
 
 }
 
+class GameCanvas {
+    game: Game
+    canvas: HTMLCanvasElement
+    ctx: CanvasRenderingContext2D
+    canvas_width: number
+    canvas_height: number
 
-class Board {
-    spaces: Space[][]
-    element: HTMLDivElement
-
-    constructor(size: number){
-        this.spaces = [];
-        for(var i: number = 0; i < size; i++){
-            this.spaces[i] = []
-            for(var j: number=0; j < size; j++){
-                this.spaces[i][j] = new Space(i,j,"VACANT");
-            }
-        }
+    constructor(){
+        this.game = new Game(10)
+        this.canvas_width = 500
+        this.canvas_height = 500
+        this.canvas = <HTMLCanvasElement>document.createElement('canvas')
+        this.ctx = this.canvas.getContext("2d")!
+    }
+    getGridCoordinates(){
+       return null
     }
 
+    drawBoard(){
+        let canvas = this.canvas
+
+    }
 }

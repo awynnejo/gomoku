@@ -21,3 +21,40 @@ body{
     display: flex;
     flex-direction: column;
 }
+
+.board{
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.space{
+    height: 2rem;
+    width: 2rem;
+    border: 1pm solid #ccc;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.space.vacant{
+    background-color: #aaa;
+}
+
+.space.black{
+    background-color: #000;
+}
+
+.space.white{
+    background-color: #fff;
+}
+
+.space.vacant:hover{
+    background-color: blue;
+    opacity: 0.5;
+}
