@@ -27,17 +27,19 @@ class Game {
 }
 
 class GameCanvas {
+    game_size: number
     game: Game
     canvas: HTMLCanvasElement
-    ctx: CanvasRenderingContext2D
     canvas_width: number
-    canvas_height: number
+    tile_size: number
+    ctx: CanvasRenderingContext2D
 
     constructor(){
-        this.game = new Game(10)
+        this.game_size = 10
+        this.game = new Game(this.game_size)
         this.canvas_width = 500
-        this.canvas_height = 500
-        this.canvas = <HTMLCanvasElement>document.createElement('canvas')
+        this.tile_size = this.canvas_width / 10
+        this.canvas = <HTMLCanvasElement>document.getElementById('canvas')
         this.ctx = this.canvas.getContext("2d")!
     }
     getGridCoordinates(){
@@ -45,7 +47,18 @@ class GameCanvas {
     }
 
     drawBoard(){
-        let canvas = this.canvas
+        for(let i = 0; i < this.canvas_width; i++){
+            this.ctx.beginPath()
+            this.ctx.moveTo(i * this.tile_size, 0)
+            this.ctx.lineTo(i * this.tile_size, this.canvas_width)
+            this.ctx.stroke()
+            this.ctx.moveTo(0, i * this.tile_size)
+            this.ctx.lineTo(this.canvas_width, i * this.tile_size)
+            this.ctx.stroke()
 
+        }
     }
 }
+
+let gc = new GameCanvas()
+gc.drawBoard()
