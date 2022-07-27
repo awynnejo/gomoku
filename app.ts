@@ -37,15 +37,21 @@ class GameCanvas {
         this.game_size = game_size
         this.game = new Game(this.game_size)
         this.canvas = <HTMLCanvasElement>document.getElementById('canvas')
-        this.tile_size = this.canvas.width / this.game_size
+        this.canvas.width = 800
+        this.canvas.height = 800
+        this.tile_size = this.canvas.getBoundingClientRect().width / this.game_size
         this.ctx = this.canvas.getContext("2d")!
         this.canvas.addEventListener('click', event => {
-            const x = (event.screenX - this.canvas.getBoundingClientRect().left) / this.tile_size
-            const y = (event.screenY - this.canvas.getBoundingClientRect().top) / this.tile_size
-            console.log(x + ':' + y)
-            console.log(this.tile_size)
+            const rect = this.canvas.getBoundingClientRect()
+            const x = Math.floor((event.clientX - rect.left) / this.tile_size)
+            const y = Math.floor((event.clientY - rect.top) / this.tile_size)
+            const coord: COORDINATES = {x: x, y: y}
+            console.log(this.getTileCentre(coord))
+            this.drawPiece(this.getTileCentre(coord), this.game.turn)
+
         }, false)
         window.addEventListener("resize", this.updateTileSize()!, false)
+        this.drawBoard()
     }
 
     updateTileSize(){
@@ -65,7 +71,21 @@ class GameCanvas {
         }
     }
 
+    getTileCentre(coord: COORDINATES){
+        const canvasX = (this.tile_size * coord.x) + (this.tile_size/2)
+        const canvasY = (this.tile_size * coord.y) + (this.tile_size/2)
+        const canvas_coord: COORDINATES = {x: canvasX, y: canvasY}
+        return (canvas_coord)
+    }
+
+    drawPiece(coord: COORDINATES, turn: TURN){
+        this.ctx.beginPath()
+        this.ctx.arc(coord.x, coord.y, this.tile_size*0.45, 0, 2*Math.PI)
+        this.ctx.fillStyle = turn.toLowerCase()
+        this.ctx.fill()
+    }
+
+
 }
 
 let gc = new GameCanvas(10)
-gc.drawBoard()
