@@ -9,6 +9,7 @@ class Game {
     board: TILE[][]
     turn: TURN
     size: number
+    gameover: boolean
 
     constructor(size: number){
         this.board = new Array(size)
@@ -16,18 +17,21 @@ class Game {
             .map(() => new Array(size).fill("VACANT"))
         this.turn = "BLACK"
         this.size = size
+        this.gameover = false
     }
+
     checkWin(){
         return null
     }
+
     placeTile(x: number, y: number){
         this.board[x][y] = this.turn
     }
+
     toggleTurn(){
         if (this.turn === "BLACK"){this.turn = "WHITE"}
         else{this.turn = "BLACK"}
     }
-
 }
 
 class GameCanvas {
@@ -46,14 +50,13 @@ class GameCanvas {
         this.tile_size = this.canvas.getBoundingClientRect().width / this.game_size
         this.ctx = this.canvas.getContext("2d")!
         this.canvas.addEventListener('click', event => {
-            const rect = this.canvas.getBoundingClientRect()
-            const x = Math.floor((event.clientX - rect.left) / this.tile_size)
-            const y = Math.floor((event.clientY - rect.top) / this.tile_size)
-            const coord: COORDINATES = {x: x, y: y}
-            this.game.placeTile(coord.x, coord.y)
+            const coord = this.getTileXY(event)
+            if (this.game.board[coord.x][coord.y] === 'VACANT'){
+                this.game.placeTile(coord.x, coord.y)
+                this.drawPiece(this.getTileCentre(coord), this.game.turn)
+                this.game.toggleTurn()
+            }
             console.log(this.game.board)
-            this.drawPiece(this.getTileCentre(coord), this.game.turn)
-            this.game.toggleTurn()
         }, false)
         window.addEventListener("resize", this.updateTileSize()!, false)
         this.drawBoard()
@@ -72,7 +75,6 @@ class GameCanvas {
             this.ctx.moveTo(0, i * this.tile_size)
             this.ctx.lineTo(this.canvas.width, i * this.tile_size)
             this.ctx.stroke()
-
         }
     }
 
@@ -83,6 +85,14 @@ class GameCanvas {
         return (canvas_coord)
     }
 
+    getTileXY(event: MouseEvent){
+        const rect = this.canvas.getBoundingClientRect()
+        const x = Math.floor((event.clientX - rect.left) / this.tile_size)
+        const y = Math.floor((event.clientY - rect.top) / this.tile_size)
+        const coord: COORDINATES = {x: x, y: y}
+        return coord
+    }
+
     drawPiece(coord: COORDINATES, turn: TURN){
         this.ctx.beginPath()
         this.ctx.arc(coord.x, coord.y, this.tile_size*0.45, 0, 2*Math.PI)
@@ -91,8 +101,7 @@ class GameCanvas {
         this.ctx.strokeStyle = 'black'
         this.ctx.stroke()
     }
-
-
 }
+
 
 let gc = new GameCanvas(10)

@@ -32,4 +32,10 @@ body{
 
 .Log { grid-area: Log; }
 
-.Controls { grid-area: Controls; }
+.Controls { grid-area: Controls;
+            text-align: center;
+          }
+
+.BtnNewGame {
+  padding: 100px;
+}
