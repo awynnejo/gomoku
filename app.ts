@@ -23,6 +23,10 @@ class Game {
     placeTile(x: number, y: number){
         this.board[x][y] = this.turn
     }
+    toggleTurn(){
+        if (this.turn === "BLACK"){this.turn = "WHITE"}
+        else{this.turn = "BLACK"}
+    }
 
 }
 
@@ -46,9 +50,10 @@ class GameCanvas {
             const x = Math.floor((event.clientX - rect.left) / this.tile_size)
             const y = Math.floor((event.clientY - rect.top) / this.tile_size)
             const coord: COORDINATES = {x: x, y: y}
-            console.log(this.getTileCentre(coord))
+            this.game.placeTile(coord.x, coord.y)
+            console.log(this.game.board)
             this.drawPiece(this.getTileCentre(coord), this.game.turn)
-
+            this.game.toggleTurn()
         }, false)
         window.addEventListener("resize", this.updateTileSize()!, false)
         this.drawBoard()
@@ -83,6 +88,8 @@ class GameCanvas {
         this.ctx.arc(coord.x, coord.y, this.tile_size*0.45, 0, 2*Math.PI)
         this.ctx.fillStyle = turn.toLowerCase()
         this.ctx.fill()
+        this.ctx.strokeStyle = 'black'
+        this.ctx.stroke()
     }
 
 
