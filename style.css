@@ -30,7 +30,8 @@ body{
 
 .canvas { position: absolute; }
 
-.Log { grid-area: Log; }
+.Log { grid-area: Log;
+       text-align: center;}
 
 .Controls { grid-area: Controls;
             text-align: center;

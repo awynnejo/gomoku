@@ -5,6 +5,8 @@ type COORDINATES = {
     y: number
 }
 
+
+
 class Game {
     board: TILE[][]
     turn: TURN
@@ -40,10 +42,13 @@ class GameCanvas {
     canvas: HTMLCanvasElement
     tile_size: number
     ctx: CanvasRenderingContext2D
+    game_state: HTMLHeadingElement
 
     constructor(game_size: number = 10){
         this.game_size = game_size
         this.game = new Game(this.game_size)
+        this.game_state = <HTMLHeadingElement>document.getElementById('game_state')
+        this.updateGameState()
         this.canvas = <HTMLCanvasElement>document.getElementById('canvas')
         this.canvas.width = 800
         this.canvas.height = 800
@@ -55,6 +60,7 @@ class GameCanvas {
                 this.game.placeTile(coord.x, coord.y)
                 this.drawPiece(this.getTileCentre(coord), this.game.turn)
                 this.game.toggleTurn()
+                this.updateGameState()
             }
             console.log(this.game.board)
         }, false)
@@ -64,6 +70,14 @@ class GameCanvas {
 
     updateTileSize(){
         this.tile_size = (this.canvas.getBoundingClientRect().right - this.canvas.getBoundingClientRect().left) / this.game_size
+    }
+
+    updateGameState(){
+        if (this.game.gameover === false){
+            this.game_state.innerHTML = this.game.turn + "'S TURN"
+        } else {
+            this.game_state.innerHTML = "GAME OVER - " + this.game.turn + "WINS"
+        }
     }
 
     drawBoard(){
@@ -101,7 +115,20 @@ class GameCanvas {
         this.ctx.strokeStyle = 'black'
         this.ctx.stroke()
     }
+
+    resetGame(){
+        this.game = new Game(this.game_size)
+        this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
+        this.updateTileSize()
+        this.drawBoard()
+        this.updateGameState()
+
+    }
 }
-
-
-let gc = new GameCanvas(10)
+let newgame_button = <HTMLButtonElement>document.getElementById('btn_new_game')
+let game_size_input = <HTMLInputElement>document.getElementById('inp_board_size')
+let gc = new GameCanvas(parseInt(game_size_input.value))
+newgame_button.addEventListener('click', function handleClick(){
+    gc.game_size = parseInt(game_size_input.value)
+    gc.resetGame()
+})
