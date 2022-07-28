@@ -8,6 +8,7 @@ type COORDINATES = {
 
 
 class Game {
+    // stores game state and logic
     board: TILE[][]
     turn: TURN
     size: number
@@ -22,8 +23,57 @@ class Game {
         this.gameover = false
     }
 
-    checkWin(){
-        return null
+    checkWin(coord: COORDINATES){
+        // checks for a streak of exactly 5, using row column and diagonals of last move's coordinates
+        function streakLength(turn: TURN, array: Array<string>){
+            let streak = 0
+            let record = 0
+            for (let i=0; i < array.length; i++){
+                if (array[i] === turn){
+                    streak = streak + 1
+                }
+                if (streak > record) {
+                    record = streak
+                }
+                if (array[i] !== turn){
+                    streak = 0
+                }
+            }
+            return record
+        }
+        let column = this.board.map(function(value,index){return value[coord.y]})
+        let row = this.board[coord.x]
+        let diag_tl_br = [this.board[coord.x][coord.y]] // generate diagonal top left to bottom right
+        for (let x = coord.x + 1, y = coord.y + 1; x < this.size && y < this.size; x++, y++){
+            diag_tl_br.push(this.board[x][y]) // append bottom right
+        }
+        for (let x = coord.x - 1, y = coord.y - 1; x >= 0 && y >= 0; x--, y--){
+            diag_tl_br.unshift(this.board[x][y]) // prepend top left
+        }
+        let diag_bl_tr = [this.board[coord.x][coord.y]] // generate diagonal bottom left to top right
+        for (let x = coord.x + 1, y = coord.y - 1; x < this.size && y >= 0; x++, y--){
+            console.log("TR")
+            console.log("x: " + x + " y: " + y)
+            diag_bl_tr.push(this.board[x][y]) //append top right
+        }
+        for (let x = coord.x - 1, y = coord.y + 1; x >= 0 && y < this.size; x--, y++){
+            console.log("BL")
+            console.log("x: " + x + " y: " + y)
+            diag_bl_tr.unshift(this.board[x][y]) //prepend bottom left
+        }
+        console.log('diag_bl_tr')
+        console.log(diag_bl_tr)
+
+        if (streakLength(this.turn, column) === 5){
+            this.gameover = true
+        } else if (streakLength(this.turn, row) ===5){
+            this.gameover = true
+        } else if (streakLength(this.turn, diag_bl_tr) === 5){
+            this.gameover = true
+    } else if (streakLength(this.turn, diag_tl_br) === 5){
+            this.gameover = true
+        }
+
     }
 
     placeTile(x: number, y: number){
@@ -37,6 +87,7 @@ class Game {
 }
 
 class GameCanvas {
+    // draws game and updates game state
     game_size: number
     game: Game
     canvas: HTMLCanvasElement
@@ -56,13 +107,14 @@ class GameCanvas {
         this.ctx = this.canvas.getContext("2d")!
         this.canvas.addEventListener('click', event => {
             const coord = this.getTileXY(event)
-            if (this.game.board[coord.x][coord.y] === 'VACANT'){
+            if (this.game.board[coord.x][coord.y] === 'VACANT' && this.game.gameover === false){
                 this.game.placeTile(coord.x, coord.y)
                 this.drawPiece(this.getTileCentre(coord), this.game.turn)
-                this.game.toggleTurn()
+                this.game.checkWin(coord)
+                if (this.game.gameover === false){
+                    this.game.toggleTurn()}
                 this.updateGameState()
             }
-            console.log(this.game.board)
         }, false)
         window.addEventListener("resize", this.updateTileSize()!, false)
         this.drawBoard()
@@ -73,10 +125,13 @@ class GameCanvas {
     }
 
     updateGameState(){
-        if (this.game.gameover === false){
+        if (this.game.board.some(row => row.includes("VACANT")) === false){
+            this.game_state.innerHTML = "GAME OVER - DRAW"
+        }
+        else if (this.game.gameover === false){
             this.game_state.innerHTML = this.game.turn + "'S TURN"
         } else {
-            this.game_state.innerHTML = "GAME OVER - " + this.game.turn + "WINS"
+            this.game_state.innerHTML = "GAME OVER - " + this.game.turn + " WINS"
         }
     }
 
@@ -118,6 +173,8 @@ class GameCanvas {
 
     resetGame(){
         this.game = new Game(this.game_size)
+        this.game.turn = "BLACK"
+        this.game.gameover = false
         this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height)
         this.updateTileSize()
         this.drawBoard()
